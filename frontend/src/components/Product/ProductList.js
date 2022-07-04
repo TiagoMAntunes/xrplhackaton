@@ -5,6 +5,10 @@ import Product from "./Product";
 
 export default class ProductList extends React.Component {
     render() {
+        if (!this.props.products) {
+            return <div>Loading...</div>;
+        }
+        
         const productList = this.props.products.map(product => (
             <Product
                 key={product.id}

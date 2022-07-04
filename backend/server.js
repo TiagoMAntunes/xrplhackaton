@@ -1,4 +1,13 @@
-const products = [
+const express = require('express')
+const app = express()
+const port = 3000
+
+const cors = require('cors')
+app.use(cors())
+
+const xrpl = require('xrpl')
+
+let products = [
     {
         id: 1,
         image: "https://thediplomat.com/wp-content/uploads/2022/03/sizes/td-story-s-1/thediplomat_2022-03-07-120913.jpg",
@@ -35,4 +44,42 @@ const products = [
     },
 ]
 
-export default products;
+let user = {}
+let xrp_client;
+
+async function generate() {
+    console.log("Generating...")
+
+    xrp_client = new xrpl.Client("wss://s.altnet.rippletest.net:51233")
+    await xrp_client.connect();
+
+    let promises = []
+    for (let i = 0; i < products.length; i++) {
+        products[i].wallet = xrpl.Wallet.generate()
+    }
+
+    await xrp_client.fundWallet().then(res => user.wallet = res.wallet);
+
+    xrp_client.request({
+        "command": "account_info",
+        "account": user.wallet.address,
+        "ledger_index": "validated",
+    }).then(response => console.log(response))
+
+    console.log("Generated!")
+}
+generate()
+
+// TODO payment
+
+app.get('/products', (_, res) => {
+    res.json(products,)
+})
+
+app.get('/user_wallet', (_, res) => {
+    res.json(user.wallet)
+})
+
+app.listen(port, () => {
+    console.log(`Example app listening on port ${port}`)
+})
