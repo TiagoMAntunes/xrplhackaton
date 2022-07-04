@@ -5,13 +5,8 @@ export default class Welcome extends React.Component {
     render() {
         return (
             <Navbar theme='primary' type='dark' expand='md'>
-                <NavbarBrand href="#">AppName</NavbarBrand>
+                <NavbarBrand href="#">CryptoCare</NavbarBrand>
                 <Nav navbar>
-                    <NavItem>
-                        <NavLink active href="#">
-                            Home
-                        </NavLink>
-                    </NavItem>
                 </Nav>
             </Navbar>
         );

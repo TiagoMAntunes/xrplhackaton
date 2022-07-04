@@ -1,13 +1,14 @@
 import React from "react";
-import { Badge, Button, Card, CardBody, CardImg, CardTitle, Collapse, FormInput, InputGroup, InputGroupAddon, InputGroupText, Modal, ModalBody, ModalFooter, ModalHeader } from "shards-react";
+import { Badge, Button, Card, CardBody, CardImg, CardTitle, Collapse, FormInput, InputGroup, InputGroupAddon, InputGroupText, Modal, ModalBody, ModalFooter, ModalHeader, Progress } from "shards-react";
 
 export default class Product extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { open: false, amount: null, openPaymentDropdown: false, paymentText: "" };
+        this.state = { open: false, amount: null, openPaymentDropdown: false, paymentText: "", progress: 0 };
         this.payment = this.payment.bind(this);
         this.inputMoney = this.inputMoney.bind(this);
         this.pay = this.pay.bind(this);
+        this.defaultModal = this.defaultModal.bind(this);
     }
 
     format(price) {
@@ -15,6 +16,7 @@ export default class Product extends React.Component {
     }
 
     payment() {
+        this.defaultModal();
         this.setState({ open: !this.state.open });
     }
 
@@ -22,12 +24,21 @@ export default class Product extends React.Component {
         this.setState({ amount: m.target.value });
     }
 
+    defaultModal() {
+        this.setState({
+            amount: null,
+            openPaymentDropdown: false,
+            paymentText: "",
+            progress: 0
+        });
+    }
+
     pay() {
         console.log(`Current amount is ${this.state.amount}`);
         this.setState({ openPaymentDropdown: true, paymentText: "Processing..." });
 
         (new Promise(r => setTimeout(r, 2000))).then(() => {
-            this.setState({ paymentText: "Payment successful ✔️" });
+            this.setState({ paymentText: "Payment successful ✔️", progress: 100 });
         });
     }
 
@@ -62,11 +73,12 @@ export default class Product extends React.Component {
                     </ModalBody>
 
                     <ModalFooter>
-                        <Button block onClick={this.pay} disabled={this.state.openPaymentDropdown}>Pay</Button>
+                        <Button block onClick={this.pay} disabled={!this.state.amount || this.state.openPaymentDropdown}>Pay</Button>
                     </ModalFooter>
 
                     <Collapse open={this.state.openPaymentDropdown}>
                         <ModalBody>
+                            <Progress theme="success" value={this.state.progress} />
                             {this.state.paymentText}
                         </ModalBody>
                     </Collapse>
