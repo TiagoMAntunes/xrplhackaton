@@ -1,12 +1,13 @@
 import React from "react";
-import { Badge, Button, Card, CardBody, CardImg, CardTitle, FormInput, InputGroup, InputGroupAddon, InputGroupText, Modal, ModalBody, ModalFooter, ModalHeader } from "shards-react";
+import { Badge, Button, Card, CardBody, CardImg, CardTitle, Collapse, FormInput, InputGroup, InputGroupAddon, InputGroupText, Modal, ModalBody, ModalFooter, ModalHeader } from "shards-react";
 
 export default class Product extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { open: false, amount: null };
+        this.state = { open: false, amount: null, openPaymentDropdown: false, paymentText: "" };
         this.payment = this.payment.bind(this);
         this.inputMoney = this.inputMoney.bind(this);
+        this.pay = this.pay.bind(this);
     }
 
     format(price) {
@@ -19,6 +20,15 @@ export default class Product extends React.Component {
 
     inputMoney(m) {
         this.setState({ amount: m.target.value });
+    }
+
+    pay() {
+        console.log(`Current amount is ${this.state.amount}`);
+        this.setState({ openPaymentDropdown: true, paymentText: "Processing..." });
+
+        (new Promise(r => setTimeout(r, 2000))).then(() => {
+            this.setState({ paymentText: "Payment successful ✔️" });
+        });
     }
 
     render() {
@@ -52,8 +62,14 @@ export default class Product extends React.Component {
                     </ModalBody>
 
                     <ModalFooter>
-                        <Button>Pay</Button>
+                        <Button block onClick={this.pay} disabled={this.state.openPaymentDropdown}>Pay</Button>
                     </ModalFooter>
+
+                    <Collapse open={this.state.openPaymentDropdown}>
+                        <ModalBody>
+                            {this.state.paymentText}
+                        </ModalBody>
+                    </Collapse>
                 </Modal>
             </div>
         );
