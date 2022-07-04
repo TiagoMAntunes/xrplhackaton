@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Card, CardBody, CardImg, CardTitle, FormInput, Modal, ModalBody, ModalFooter, ModalHeader } from "shards-react";
+import { Badge, Button, Card, CardBody, CardImg, CardTitle, FormInput, InputGroup, InputGroupAddon, InputGroupText, Modal, ModalBody, ModalFooter, ModalHeader } from "shards-react";
 
 export default class Product extends React.Component {
     constructor(props) {
@@ -36,11 +36,19 @@ export default class Product extends React.Component {
                     </CardBody>
                 </Card>
 
-                <Modal open={this.state.open} toggle={this.payment}>
+                <Modal open={this.state.open} toggle={this.payment} fade={true}>
                     <ModalHeader>Payment</ModalHeader>
                     <ModalBody>
-                        <p>Thank you for supporting {this.props.name}! Please input below the amount you wish to donate:</p>
-                        <FormInput type="number" placeholder="Amount" onChange={this.inputMoney} />
+                        <p>Thank you for supporting  <Badge theme='info'>{this.props.name}</Badge>!</p>
+                        <InputGroup>
+                            <InputGroupAddon type='prepend'>
+                                <InputGroupText>I wish to donate</InputGroupText>
+                            </InputGroupAddon>
+                            <FormInput type="number" placeholder="Amount" onChange={this.inputMoney} />
+                            <InputGroupAddon type='append'>
+                                <InputGroupText>XRP</InputGroupText>
+                            </InputGroupAddon>
+                        </InputGroup>
                     </ModalBody>
 
                     <ModalFooter>
