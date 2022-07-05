@@ -1,5 +1,5 @@
 import React from "react";
-import { Badge, Button, Card, CardBody, CardImg, CardTitle, Collapse, FormInput, InputGroup, InputGroupAddon, InputGroupText, Modal, ModalBody, ModalFooter, ModalHeader, Progress } from "shards-react";
+import { Alert, Badge, Button, Card, CardBody, CardImg, CardTitle, Collapse, FormInput, InputGroup, InputGroupAddon, InputGroupText, Modal, ModalBody, ModalFooter, ModalHeader, Progress } from "shards-react";
 
 export default class Product extends React.Component {
     constructor(props) {
@@ -33,13 +33,31 @@ export default class Product extends React.Component {
         });
     }
 
-    pay() {
+    async pay() {
         console.log(`Current amount is ${this.state.amount}`);
         this.setState({ openPaymentDropdown: true, paymentText: "Processing..." });
 
-        (new Promise(r => setTimeout(r, 2000))).then(() => {
-            this.setState({ paymentText: "Payment successful ✔️", progress: 100 });
-        });
+        (async () => {
+            const rawRes = await fetch('http://localhost:3000/pay', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    destination: this.props.wallet,
+                    amount: this.state.amount,
+                    id: this.props.id
+                })
+            });
+            const content = await rawRes.json();
+
+            if (content.result === "tesSUCCESS") {
+                this.setState({ paymentText: "Donation successful ✔️ ", progress: 100 });
+            } else {
+                this.setState({ paymentText: `Donation failed with error: ${content.result}`, progress: 50 });
+            }
+        })();
     }
 
     render() {
@@ -61,6 +79,7 @@ export default class Product extends React.Component {
                     <ModalHeader>Payment</ModalHeader>
                     <ModalBody>
                         <p>Thank you for supporting  <Badge theme='info'>{this.props.name}</Badge>!</p>
+                        <Alert theme='light'>Destination address: {this.props.wallet}</Alert>
                         <InputGroup>
                             <InputGroupAddon type='prepend'>
                                 <InputGroupText>I wish to donate</InputGroupText>
@@ -78,7 +97,7 @@ export default class Product extends React.Component {
 
                     <Collapse open={this.state.openPaymentDropdown}>
                         <ModalBody>
-                            <Progress theme="success" value={this.state.progress} />
+                            <Progress value={this.state.progress} />
                             {this.state.paymentText}
                         </ModalBody>
                     </Collapse>

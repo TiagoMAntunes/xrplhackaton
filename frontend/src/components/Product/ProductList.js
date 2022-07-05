@@ -17,6 +17,7 @@ export default class ProductList extends React.Component {
                 name={product.name}
                 description={product.description}
                 price={product.currentDonation}
+                wallet={product.wallet.classicAddress}
             />
         ));
 

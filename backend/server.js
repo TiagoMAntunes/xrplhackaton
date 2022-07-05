@@ -1,6 +1,8 @@
 const express = require('express')
 const app = express()
 const port = 3000
+const bodyParser = require('body-parser')
+var jsonParser = bodyParser.json()
 
 const cors = require('cors')
 app.use(cors())
@@ -78,6 +80,36 @@ app.get('/products', (_, res) => {
 
 app.get('/user_wallet', (_, res) => {
     res.json(user.wallet)
+})
+
+app.post('/pay', jsonParser, async function (req, response) {
+    console.log(req.body)
+    let destination = req.body.destination;
+    let amount = req.body.amount;
+    let id = parseInt(req.body.id);
+
+    console.log(`Paying ${amount} XRP to ${destination}`)
+
+    // Prepare transaction
+    const prepared = await xrp_client.autofill({
+        "TransactionType": "Payment",
+        "Account": user.wallet.address,
+        "Amount": xrpl.xrpToDrops(amount),
+        "Destination": destination,
+    });
+
+    // Sign transaction
+    const signed = user.wallet.sign(prepared);
+
+    await xrp_client.submitAndWait(signed.tx_blob).then(res => {
+        console.log("Transaction result: ", res.result.meta.TransactionResult);
+        if (res.result.meta.TransactionResult === 'tesSUCCESS') {
+            products[id - 1].currentDonation += parseInt(amount);
+        }
+        response.json({
+            result: res.result.meta.TransactionResult
+        })
+    })
 })
 
 app.listen(port, () => {
