@@ -1,5 +1,5 @@
 import React from "react";
-import { Container, Row } from "shards-react";
+import { Col, Container, Row } from "shards-react";
 
 import Product from "./Product";
 
@@ -21,12 +21,17 @@ export default class ProductList extends React.Component {
             />
         ));
 
-        // make a responsive grid
+
         return (
             <Container>
                 <Row style={{marginTop: "10px"}}>
-                    {productList}
+                    {productList.map(p => (
+                        <Col key={p.id} sm="12" lg="4">
+                            {p}
+                        </Col>
+                    ))}
                 </Row>
+
             </Container>
 
 

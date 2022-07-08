@@ -107,7 +107,8 @@ app.post('/pay', jsonParser, async function (req, response) {
             products[id - 1].currentDonation += parseInt(amount);
         }
         response.json({
-            result: res.result.meta.TransactionResult
+            result: res.result.meta.TransactionResult,
+            transactionID: res.result.TxnSignature,
         })
     })
 })

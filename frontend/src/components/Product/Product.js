@@ -4,7 +4,7 @@ import { Alert, Badge, Button, Card, CardBody, CardImg, CardTitle, Collapse, For
 export default class Product extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { open: false, amount: null, openPaymentDropdown: false, paymentText: "", progress: 0 };
+        this.state = { open: false, amount: null, openPaymentDropdown: false, paymentText: "", progress: 0, transactionID: "" };
         this.payment = this.payment.bind(this);
         this.inputMoney = this.inputMoney.bind(this);
         this.pay = this.pay.bind(this);
@@ -29,6 +29,7 @@ export default class Product extends React.Component {
             amount: null,
             openPaymentDropdown: false,
             paymentText: "",
+            transactionID: "",
             progress: 0
         });
     }
@@ -53,7 +54,7 @@ export default class Product extends React.Component {
             const content = await rawRes.json();
 
             if (content.result === "tesSUCCESS") {
-                this.setState({ paymentText: "Donation successful ✔️ ", progress: 100 });
+                this.setState({ paymentText: "Donation successful ✔️ ", progress: 100, transactionID: content.transactionID });
             } else {
                 this.setState({ paymentText: `Donation failed with error: ${content.result}`, progress: 50 });
             }
@@ -62,7 +63,7 @@ export default class Product extends React.Component {
 
     render() {
         return (
-            <div>
+            <div style={{ overflowWrap: "break-word" }}>
                 <Card style={{ maxWidth: "300px", margin: "20px" }}>
                     <CardImg src={this.props.image} />
                     <CardBody style={{ height: "200px", textAlign: "left" }}>
@@ -97,8 +98,12 @@ export default class Product extends React.Component {
 
                     <Collapse open={this.state.openPaymentDropdown}>
                         <ModalBody>
-                            <Progress value={this.state.progress} />
                             {this.state.paymentText}
+                            <Progress value={this.state.progress} />
+
+                            <Collapse open={this.state.transactionID !== ""} style={{marginTop: "5px"}}>
+                                <Alert theme='light'>Transaction ID: {this.state.transactionID}</Alert>
+                            </Collapse>
                         </ModalBody>
                     </Collapse>
                 </Modal>
