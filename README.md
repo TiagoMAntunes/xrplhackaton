@@ -17,7 +17,7 @@ Open 2 terminal windows. On the first one do
 cd backend && yarn start
 ```
 
-And on the other one do
+Please make sure the backend server is running on port 3000. Then do:
 
 ```bash
 cd frontend && yarn start
